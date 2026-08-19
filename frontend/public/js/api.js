@@ -1,4 +1,4 @@
-const API_BASE = "/api";
+const API_BASE = "https://schoolerp-8tg2.onrender.com/api";
 
 const Auth = {
   getToken: () => localStorage.getItem("sdps_token"),
