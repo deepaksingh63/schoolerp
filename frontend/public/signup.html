@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sign Up — SD Public School</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div class="auth-wrap">
+  <div class="auth-card">
+    <div class="brand">
+      <div class="emoji">🎓</div>
+      <h1>SD Public School</h1>
+      <p>Create your portal account</p>
+    </div>
+
+    <div class="role-tabs" id="roleTabs">
+      <button type="button" data-role="teacher" class="active">Teacher</button>
+      <button type="button" data-role="student">Student</button>
+      <button type="button" data-role="parent">Parent</button>
+    </div>
+
+    <div class="reg-note" id="regNote">
+      Enter the <strong>School Registration Number</strong> issued to you by the school office. It is unique to you and is used to verify you're on record before your login is created.
+    </div>
+
+    <div id="alertBox"></div>
+
+    <form id="signupForm">
+      <div class="field">
+        <label id="regLabel" for="registrationNumber">School Registration Number</label>
+        <input type="text" id="registrationNumber" placeholder="e.g. TCH-1002" required>
+        <div class="hint" id="regHint">This must exactly match the unique registration number on your school record.</div>
+      </div>
+      <div class="field">
+        <label for="fullUsername">Choose a Username</label>
+        <input type="text" id="fullUsername" minlength="4" required>
+      </div>
+      <div class="field">
+        <label for="newPassword">Create Password</label>
+        <input type="password" id="newPassword" minlength="6" required>
+        <div class="hint">At least 6 characters.</div>
+      </div>
+      <div class="field">
+        <label for="confirmPassword">Confirm Password</label>
+        <input type="password" id="confirmPassword" minlength="6" required>
+      </div>
+      <button type="submit" class="btn">Create Account</button>
+    </form>
+
+    <p class="switch-line">Already have an account? <a href="login.html">Log in</a></p>
+  </div>
+</div>
+
+<script src="js/api.js"></script>
+<script>
+  if (Auth.isLoggedIn()) location.href = "app.html";
+
+  let selectedRole = "teacher";
+  const roleCopy = {
+    teacher: {
+      label: "School Registration Number",
+      placeholder: "e.g. TCH-1002",
+      hint: "This is the unique staff registration number given to you by the school admin.",
+      note: "Enter the <strong>School Registration Number</strong> issued to you by the school office. It is unique to you and is used to verify you're on record before your login is created.",
+    },
+    student: {
+      label: "School Registration Number",
+      placeholder: "e.g. STU-2002",
+      hint: "This is the unique registration number on your admission/enrollment record.",
+      note: "Enter your own <strong>School Registration Number</strong> (from your admission record). It is unique to you and verifies you're an enrolled student before your login is created.",
+    },
+    parent: {
+      label: "Child's School Registration Number",
+      placeholder: "e.g. STU-2002",
+      hint: "Enter your child's unique student registration number — not your own.",
+      note: "Enter your <strong>child's School Registration Number</strong>. It uniquely identifies their student record and links your parent account to it.",
+    },
+  };
+
+  function applyRoleUI(role) {
+    selectedRole = role;
+    document.querySelectorAll("#roleTabs button").forEach((b) => b.classList.toggle("active", b.dataset.role === role));
+    const c = roleCopy[role];
+    document.getElementById("regLabel").textContent = c.label;
+    document.getElementById("registrationNumber").placeholder = c.placeholder;
+    document.getElementById("regHint").textContent = c.hint;
+    document.getElementById("regNote").innerHTML = c.note;
+  }
+
+  document.getElementById("roleTabs").addEventListener("click", (e) => {
+    const btn = e.target.closest("button[data-role]");
+    if (btn) applyRoleUI(btn.dataset.role);
+  });
+
+  document.getElementById("signupForm").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const alertBox = document.getElementById("alertBox");
+    alertBox.innerHTML = "";
+
+    const registrationNumber = document.getElementById("registrationNumber").value.trim();
+    const username = document.getElementById("fullUsername").value.trim();
+    const password = document.getElementById("newPassword").value;
+    const confirmPassword = document.getElementById("confirmPassword").value;
+
+    if (password !== confirmPassword) {
+      alertBox.innerHTML = `<div class="alert error">Passwords do not match.</div>`;
+      return;
+    }
+
+    const btn = e.target.querySelector("button");
+    btn.disabled = true; btn.textContent = "Creating account...";
+    try {
+      await api("/auth/signup", {
+        method: "POST",
+        body: { role: selectedRole, registrationNumber, username, password },
+      });
+      alertBox.innerHTML = `<div class="alert success">Account created! Redirecting to login...</div>`;
+      setTimeout(() => (location.href = "login.html"), 1200);
+    } catch (err) {
+      alertBox.innerHTML = `<div class="alert error">${escapeHtml(err.message)}</div>`;
+      btn.disabled = false; btn.textContent = "Create Account";
+    }
+  });
+</script>
+</body>
+</html>

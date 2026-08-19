@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SD Public School — Portal</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div class="app">
+  <aside class="sidebar" id="sidebar">
+    <div class="brand-mini">
+      <h2>🎓 SD Public School</h2>
+      <span>Smart School Management Portal</span>
+    </div>
+    <nav id="navLinks"></nav>
+    <div class="logout">
+      <button class="btn danger small" onclick="logout()" style="width:100%">Log Out</button>
+    </div>
+  </aside>
+
+  <div class="main">
+    <div class="topbar">
+      <div style="display:flex;align-items:center;gap:10px">
+        <button class="menu-btn" onclick="document.getElementById('sidebar').classList.toggle('open')">☰</button>
+        <h3 id="pageTitle">Dashboard</h3>
+      </div>
+      <div class="who" id="whoBox"></div>
+    </div>
+    <div class="content" id="content">Loading...</div>
+  </div>
+</div>
+
+<script src="js/api.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>

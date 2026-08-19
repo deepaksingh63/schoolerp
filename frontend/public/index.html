@@ -1,0 +1,10 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>SD Public School</title></head>
+<body>
+<script>
+  const token = localStorage.getItem("sdps_token");
+  location.href = token ? "app.html" : "login.html";
+</script>
+</body>
+</html>
